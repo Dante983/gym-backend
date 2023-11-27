@@ -30,14 +30,18 @@ To start the Node.js server, use the following command:
 
     npm start
 
-API Endpoints
-/api: Returns a simple "Hello World!" message.
-/users: Retrieves data from the "users" table in the connected MySQL database.
-Development
-Feel free to explore and modify the code to fit your requirements. The main server file is app.js, and database configuration is in database.js.
+### API Endpoints
 
-License
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+    /api: Returns a simple "Hello World!" message.
+    /users: Retrieves data from the "users" table in the connected MySQL database.
+
+### Development
+
+    Feel free to explore and modify the code to fit your requirements. The main server file is app.js, and database configuration is in database.js.
+
+### License
+    
+    This project is licensed under the MIT License - see the LICENSE.md file for details.
 
 
-Make sure to replace "your-username" with your actual GitHub username and customize the content according to your project structure and specific details. Also, consider adding a license file if you haven't already, and provide any additional information that might be useful for other developers working on or using your application.
+    Make sure to replace "your-username" with your actual GitHub username and customize the content according to your project structure and specific details. Also, consider adding a license file if you haven't already, and provide any additional information that might be useful for other developers working on or using your application.
