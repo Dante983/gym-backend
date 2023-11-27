@@ -1,10 +1,10 @@
 const mysql = require("mysql");
 
 const con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "!Nikolasavic61",
-  database: "laravel",
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.password,
+  database: process.env.database,
 });
 
 module.exports = con;
