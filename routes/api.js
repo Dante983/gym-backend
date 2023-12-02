@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const pageControllers = require('../controllers/pageControllers');
 
-router.get('/', pageControllers.homePage);
+// Define your routes here
+router.post('/login', pageControllers.login);
+router.get('/login', pageControllers.loginGet);
 router.post('/contact', pageControllers.contactPage);
-// router.get('/about', pageControllers.aboutPage);
-// router.post('/contact', pageControllers.contactPage);
-// router.get('/gallery', pageControllers.galleryPage);
+router.get('/', pageControllers.homePage);
 
 module.exports = router;

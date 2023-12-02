@@ -1,9 +1,9 @@
-const express = require('express');
-const router = express.Router();
 const db = require('../server/database');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
 
 const homePage = (req, res) => {
+  console.log('aaa');
     const q = "SELECT * FROM users"
   db.query(q, (err, data) => {
     if (err) {
@@ -14,9 +14,6 @@ const homePage = (req, res) => {
   });
 };
 
-router.get('/about', (req, res) => {
-    res.send('About Page');
-});
 
 const contactPage = (req, res) => {console.log(req.body);
   let transporter = nodemailer.createTransport({
@@ -45,14 +42,46 @@ const contactPage = (req, res) => {console.log(req.body);
   });
 };
 
+const login = (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
 
-router.get('/gallery', (req, res) => {
-    res.send('Gallery Page');
-});
+  const q = "SELECT * FROM users WHERE email = ?";
+  db.query(q, [email], (err, results) => {
+    if (err) {
+      res.status(500).json({ error: 'An error occurred while querying the database' });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(401).json({ error: 'Invalid email or password' });
+      return;
+    }
+
+    const user = results[0];
+
+    bcrypt.compare(password, user.password, (err, result) => {
+      if (err) {
+        res.status(500).json({ error: 'An error occurred while comparing passwords' });
+        return;
+      }
+
+      if (result) {
+        res.json({ message: 'Authentication successful' });
+      } else {
+        res.status(401).json({ error: 'Invalid email or password' });
+      }
+    });
+  });
+};
+
+const loginGet = (req, res) => {
+  res.send('Login Page');
+};
 
 module.exports = {
     homePage,
-    // aboutPage,
-    contactPage
-    // galleryPage
+    contactPage,
+    login,
+    loginGet
 };
