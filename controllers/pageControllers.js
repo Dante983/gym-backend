@@ -46,8 +46,8 @@ const login = (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  const q = "SELECT * FROM users WHERE email = ?";
-  db.query(q, [email], (err, results) => {
+  const q = "SELECT * FROM gym.users WHERE email = ?";
+  db.query(q, email, (err, results) => {
     if (err) {
       res.status(500).json({ error: 'An error occurred while querying the database' });
       return;
@@ -57,9 +57,27 @@ const login = (req, res) => {
       res.status(401).json({ error: 'Invalid email or password' });
       return;
     }
-
+    
     const user = results[0];
 
+// bcrypt.hash(password, 10, function(err, hashedPassword) {
+// const username = 'user@user.com'; // replace with the actual username
+// const q = "UPDATE gym.users SET password = ? WHERE email = ?";
+
+// db.query(q, [hashedPassword, username], (err, results) => {
+//   if (err) {
+//     // Handle error
+//     console.error('An error occurred while updating the password:', err);
+//     return;
+//   }
+
+//   console.log('Password updated successfully');
+// });
+//   console.log(hash); // print the new hashed password
+// });
+//   console.log('Hashed password:', hashedPassword);
+//   console.log('Password from database:', user.password);
+// });
     bcrypt.compare(password, user.password, (err, result) => {
       if (err) {
         res.status(500).json({ error: 'An error occurred while comparing passwords' });
@@ -67,7 +85,7 @@ const login = (req, res) => {
       }
 
       if (result) {
-        res.json({ message: 'Authentication successful' });
+        res.json({ message: 'Authentication successful', isAdmin: user.isAdmin });
       } else {
         res.status(401).json({ error: 'Invalid email or password' });
       }
