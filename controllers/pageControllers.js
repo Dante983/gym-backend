@@ -85,6 +85,7 @@ const login = (req, res) => {
       }
 
       if (result) {
+        req.session.user = user;
         res.json({ message: 'Authentication successful', isAdmin: user.isAdmin });
       } else {
         res.status(401).json({ error: 'Invalid email or password' });
@@ -97,9 +98,42 @@ const loginGet = (req, res) => {
   res.send('Login Page');
 };
 
+const logout = (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.log('An error occurred while destroying the session:', err);
+    }
+
+    res.redirect('/');
+  });
+}
+
+const checkSession = (req, res) => {
+  if (req.session.user) {
+    // The user is logged in
+    res.json({ loggedIn: true, user: req.session.user });
+  } else {
+    // The user is not logged in
+    res.json({ loggedIn: false });
+  }
+}
+
+const adminDashboard = (req, res) => {
+  if (checkSession) {
+    // The user is logged in
+    res.json({ message: 'Authorised' });
+  } else {
+    // The user is not logged in
+    res.json({ message: 'NOT Authorised' });
+  }
+}
+
 module.exports = {
     homePage,
     contactPage,
     login,
-    loginGet
+    loginGet,
+    logout,
+    checkSession,
+    adminDashboard
 };

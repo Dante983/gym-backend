@@ -5,7 +5,7 @@ let con;
 const user = process.env.USER;
 
 function handleDisconnect() {
-    console.log(process.env.HOST, user, process.env.PASSWORD, process.env.DATABASE);
+    // console.log(process.env.HOST, user, process.env.PASSWORD, process.env.DATABASE);
     con = mysql.createConnection({
         host: process.env.HOST,
         user: 'root',
