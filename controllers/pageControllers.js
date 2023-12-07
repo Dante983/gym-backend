@@ -109,7 +109,7 @@ const adminDashboard = (req, res) => {
     // The user is logged in
     res.json({ message: 'Authorised', users: [session.user] });
   } else {
-    // The user is not logged in
+    // The user is not logged in blabla
     res.json({ message: 'NOT Authorised' });
   }
 }
