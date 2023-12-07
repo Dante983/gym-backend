@@ -60,6 +60,73 @@ const login = (req, res) => {
     
     const user = results[0];
 
+    bcrypt.compare(password, user.password, (err, result) => {
+      if (err) {
+        res.status(500).json({ error: 'An error occurred while comparing passwords' });
+        return;
+      }
+
+      if (result) {
+        req.session.user = user;
+        session = req.session;
+        res.json({ message: 'Authentication successful', isAdmin: user.isAdmin });
+      } else {
+        res.status(401).json({ error: 'Invalid email or password' });
+      }
+    });
+  });
+};
+
+const loginGet = (req, res) => {
+  res.send('Login Page');
+};
+
+const logout = (req, res) => {
+  session.destroy(err => {
+    if (err) {
+      console.log('An error occurred while destroying the session:', err);
+    }
+
+    res.redirect('/');
+  });
+}
+
+const checkSession = (req, res) => {
+  // odraditi jebene sesije
+  console.log(req.session.user);
+  if (session.user) {
+    // The user is logged in
+    res.json({ loggedIn: true, user: session.user });
+  } else {
+    // The user is not logged in
+    res.json({ loggedIn: false });
+  }
+}
+
+const adminDashboard = (req, res) => {
+  console.log(session);
+  if (session.user) {
+    // The user is logged in
+    res.json({ message: 'Authorised', users: [session.user] });
+  } else {
+    // The user is not logged in
+    res.json({ message: 'NOT Authorised' });
+  }
+}
+
+module.exports = {
+    homePage,
+    contactPage,
+    login,
+    loginGet,
+    logout,
+    checkSession,
+    adminDashboard
+};
+
+
+
+
 // bcrypt.hash(password, 10, function(err, hashedPassword) {
 // const username = 'user@user.com'; // replace with the actual username
 // const q = "UPDATE gym.users SET password = ? WHERE email = ?";
@@ -78,62 +145,3 @@ const login = (req, res) => {
 //   console.log('Hashed password:', hashedPassword);
 //   console.log('Password from database:', user.password);
 // });
-    bcrypt.compare(password, user.password, (err, result) => {
-      if (err) {
-        res.status(500).json({ error: 'An error occurred while comparing passwords' });
-        return;
-      }
-
-      if (result) {
-        req.session.user = user;
-        res.json({ message: 'Authentication successful', isAdmin: user.isAdmin });
-      } else {
-        res.status(401).json({ error: 'Invalid email or password' });
-      }
-    });
-  });
-};
-
-const loginGet = (req, res) => {
-  res.send('Login Page');
-};
-
-const logout = (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      console.log('An error occurred while destroying the session:', err);
-    }
-
-    res.redirect('/');
-  });
-}
-
-const checkSession = (req, res) => {
-  if (req.session.user) {
-    // The user is logged in
-    res.json({ loggedIn: true, user: req.session.user });
-  } else {
-    // The user is not logged in
-    res.json({ loggedIn: false });
-  }
-}
-
-const adminDashboard = (req, res) => {
-  if (checkSession) {
-    // The user is logged in
-    res.json({ message: 'Authorised' });
-  } else {
-    // The user is not logged in
-    res.json({ message: 'NOT Authorised' });
-  }
-}
-
-module.exports = {
-    homePage,
-    contactPage,
-    login,
-    loginGet,
-    logout,
-    checkSession,
-    adminDashboard
-};
