@@ -2,6 +2,15 @@ const db = require('../server/database');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 
+// Middleware to check if the user is an admin
+const ensureAdmin = (req, res, next) => {
+  if (req.session.user && req.session.user.isAdmin) {
+    next();
+  } else {
+    res.status(403).json({ message: 'Forbidden' });
+  }
+}
+
 const homePage = (req, res) => {
   console.log('aaa');
     const q = "SELECT * FROM users"
@@ -49,29 +58,26 @@ const login = (req, res) => {
   const q = "SELECT * FROM gym.users WHERE email = ?";
   db.query(q, email, (err, results) => {
     if (err) {
-      res.status(500).json({ error: 'An error occurred while querying the database' });
-      return;
+      return res.status(500).json({ error: 'An error occurred while querying the database' });
     }
 
     if (results.length === 0) {
-      res.status(401).json({ error: 'Invalid email or password' });
-      return;
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
     
     const user = results[0];
 
     bcrypt.compare(password, user.password, (err, result) => {
       if (err) {
-        res.status(500).json({ error: 'An error occurred while comparing passwords' });
-        return;
+        return res.status(500).json({ error: 'An error occurred while comparing passwords' });
       }
 
       if (result) {
         req.session.user = user;
         session = req.session;
-        res.json({ message: 'Authentication successful', isAdmin: user.isAdmin });
+        return res.json({ message: 'Authentication successful', isAdmin: user.isAdmin });
       } else {
-        res.status(401).json({ error: 'Invalid email or password' });
+        return res.status(401).json({ error: 'Invalid email or password' });
       }
     });
   });
@@ -82,23 +88,20 @@ const loginGet = (req, res) => {
 };
 
 const logout = (req, res) => {
-  session.destroy(err => {
+  req.session.destroy(err => {
     if (err) {
       console.log('An error occurred while destroying the session:', err);
+      return res.status(500).json({ error: 'Failed to destroy session' });
     }
-
-    res.redirect('/');
+    res.json({ message: 'Logout successful' });
   });
 }
 
 const checkSession = (req, res) => {
-  // odraditi jebene sesije
   console.log(req.session.user);
   if (session.user) {
-    // The user is logged in
     res.json({ loggedIn: true, user: session.user });
   } else {
-    // The user is not logged in
     res.json({ loggedIn: false });
   }
 }
